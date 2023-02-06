@@ -50,7 +50,6 @@ app.post("/", async(req, res) => {
     const observable = client.subscribe({ query: queryParam });
     const realtimeResults = function realtimeResults(data: any) {
       console.log(data)
-      observable.disconnect();
       res.status(200).send(data)
     };
     observable.subscribe({
