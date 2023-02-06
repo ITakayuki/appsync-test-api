@@ -46,20 +46,18 @@ app.post("/", async(req, res) => {
   const query = req.body.query || getRoomStatus;
   console.log(query)
   const queryParam = gql(query);
-  client.hydrated().then((client:any) => {
-    const observable = client.subscribe({ query: queryParam });
-    const realtimeResults = function realtimeResults(data: any) {
-      console.log(data)
+  const subscriptionClient = await client.hydrated()
+    const observable = subscriptionClient.subscribe({ query: queryParam });
+    const listener = observable.subscribe({
+      next: (data: any) =>{
+      listener.unsubscribe();
       res.status(200).send(data)
-    };
-    observable.subscribe({
-      next: realtimeResults,
+  },
       complete: console.log,
       error: (error:any) => {
         console.log("ERROR: ", error)
       }
     });
-  })
 })
 
 const server = http.createServer(app);
